@@ -12,17 +12,26 @@ public class DutyController : ControllerBase
 
     [HttpPost]
     [Route("/duty/add")]
-    [Authorize(Policy = Policies.USER)]
+    [Authorize(Policy = Policies.ADMIN)]
     public IActionResult addDuty([FromBody] DutyDTO dto) {
         IActionResult response;
-        Employee user = (Employee)userService.findUser(dto.Username);
-        Duty duty = new Duty(DateTime.Parse(dto.Date), (Specialization)Enum.Parse(typeof(Specialization), dto.Specialization));
-        dutyService.addDuty(user, duty);
-        response = Ok(new
+        try
         {
-            date = duty.Date,
-            specialization = duty.Specialization.ToString()
-        }); ;
-        return response;
+            Employee user = (Employee)userService.findUser(dto.Username);
+            Duty duty = new Duty(DateTime.Parse(dto.Date), (Specialization)Enum.Parse(typeof(Specialization), dto.Specialization));
+            dutyService.addDuty(user, duty);
+            response = Ok(new
+            {
+                date = duty.Date,
+                specialization = duty.Specialization.ToString()
+            }); ;
+            return response;
+        }
+        catch (Exception e) {
+            return response = BadRequest(new
+            {
+                e.Message
+            });
+        }
     }
 }

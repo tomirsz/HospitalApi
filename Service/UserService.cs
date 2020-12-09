@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using HospitalApi.Exceptions;
 
 public class UserService
 {
 
-    private List<User> users = new List<User>();
+    private List<User> users;
     private static UserService instance;
+    private readonly SerializeService serializeService = SerializeService.Instance();
 
     protected UserService() {
+        this.users = serializeService.deserialize();
     }
 
     public static UserService Instance() {
@@ -33,6 +36,7 @@ public class UserService
             checkUsernameIsUnique(username);
             user.Role = "ADMIN";
             users.Add(user);
+            serializeService.Serialize(this.users);
             return user;
         }
         catch (UserAlreadyExistsException e)
@@ -50,6 +54,7 @@ public class UserService
             checkUsernameIsUnique(username);
             user.Role = "USER";
             users.Add(user);
+            serializeService.Serialize(this.users);
             return user;
         }
         catch (UserAlreadyExistsException e)
@@ -67,6 +72,7 @@ public class UserService
             checkUsernameIsUnique(username);
             user.Role = "USER";
             users.Add(user);
+            serializeService.Serialize(this.users);
             return user;
         }
         catch (UserAlreadyExistsException e)
@@ -166,6 +172,37 @@ public class UserService
         {
             return true;
         }
+    }
+
+    public User editUser(UserDTO editedUser, string username) {
+
+            User user = this.users.Find(user => user.Username == username);
+        if (user == null) {
+            throw new UserNotFoundException(username);
+        }
+            if (user.GetType() == typeof(User)) {
+                user.Username = editedUser.Username;
+                user.Password = BCrypt.Net.BCrypt.HashPassword(editedUser.Password);
+                return user;
+            } else if(user.GetType() == typeof(Nurse)) {
+                Nurse nurse = getAllNurses().Find(user => user.Username == username);
+                nurse.Username = editedUser.Username;
+                nurse.Password = BCrypt.Net.BCrypt.HashPassword(editedUser.Password);
+                nurse.FirstName = editedUser.FirstName;
+                nurse.LastName = editedUser.LastName;
+                nurse.Pesel = editedUser.Pesel;
+                return nurse;
+            } else {
+                Doctor doctor = getAllDoctors().Find(user => user.Username == username);
+                doctor.Username = editedUser.Username;
+                doctor.Password = BCrypt.Net.BCrypt.HashPassword(editedUser.Password);
+                doctor.FirstName = editedUser.FirstName;
+                doctor.LastName = editedUser.LastName;
+                doctor.Pesel = editedUser.Pesel;
+                doctor.Specialization = (Specialization)Enum.Parse(typeof(Specialization), editedUser.Specialization.ToString());
+                doctor.Pwz = editedUser.Pwz;
+                return doctor;
+            }
     }
 
 }

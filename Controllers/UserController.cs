@@ -8,6 +8,7 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using HospitalApi.Exceptions;
 
 namespace HospitalApi.Controllers
 {
@@ -165,5 +166,26 @@ namespace HospitalApi.Controllers
         {
             return userService.getAllUsers();
         }
-    }
+
+        [HttpPut("/user/edit/{username}")]
+        [Authorize(Policy = Policies.ADMIN)]
+        public IActionResult editUser([FromBody] UserDTO user, string username) {
+            IActionResult response;
+            try
+            {
+                User newUser = userService.editUser(user, username);
+                response = Ok(new {
+                    user = newUser
+                }); 
+                return response;
+            }
+            catch (UserNotFoundException e) {
+                return response = BadRequest(new
+                {
+                    message = e.Message
+                });
+            }
+
+        }
+    } 
 }

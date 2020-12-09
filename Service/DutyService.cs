@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+
 
 public class DutyService
 {
@@ -30,11 +32,11 @@ public class DutyService
                 employee.Duty.Add(duty);
                 return true;
             }
-            return false;
+            throw new DutySpecializationException(duty.Specialization);
         }
         else
         {
-            return false;
+            throw new DutyDateException(duty.Date);
         }
     }
 
@@ -51,14 +53,31 @@ public class DutyService
 
     private bool checkDuties(List<Duty> employeeDuties, Duty duty)
     {
+
+        if (checkNumberOfDutiesInCurrentMonth(employeeDuties, duty))
+        {
+            return false;
+        }
+
         foreach (Duty employeeCurrentDuty in employeeDuties)
         {
             if (compareDate(employeeCurrentDuty.Date, duty))
-            {
-                return false;
+                {
+                    return false;
+                }
             }
-        }
         return true;
+    }
+
+    private bool checkNumberOfDutiesInCurrentMonth(List<Duty> employeeDuties, Duty duty)
+    {
+        List<Duty> result = employeeDuties.Where(d => d.Date.Month == duty.Date.Month).ToList();
+        int resultSize = result.Count;
+        if (resultSize >= 2)
+        {
+            return true;
+        }
+        return false;
     }
 
     private bool compareDate(DateTime date, Duty duty)
@@ -93,5 +112,4 @@ public class DutyService
             return true;
         }
     }
-
 }
