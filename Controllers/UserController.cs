@@ -32,7 +32,7 @@ namespace HospitalApi.Controllers
             IActionResult response = Unauthorized();
             try
             {
-                User user = userService.createUser(login.Username, login.Password);
+                User user = userService.createUser(login.Username, login.Password, login.FirstName, login.LastName, login.Pesel);
                 var tokenString = GenerateJWTToken(user);
                 response = Ok(new
                 {
@@ -132,6 +132,85 @@ namespace HospitalApi.Controllers
             }
         }
 
+
+        [HttpGet("/employees")]
+        [Authorize(Policy = Policies.USER)]
+        public IEnumerable<Employee> findAllEmployees()
+        {
+            return userService.findAllEmployees();
+        }
+
+        [HttpGet("/users")]
+        [Authorize(Policy = Policies.ADMIN)]
+        public IEnumerable<User> findAllUsersForAdmin()
+        {
+            return userService.getAllUsers();
+        }
+
+        [HttpGet("/user/edit/{username}")]
+        [Authorize(Policy = Policies.ADMIN)]
+        public IActionResult getUser(string username)
+        {
+            IActionResult response;
+            try
+            {
+                User newUser = userService.getUser(username);
+                response = Ok(new
+                {
+                    user = newUser
+                });
+                return response;
+            }
+            catch (UserNotFoundException e)
+            {
+                return response = BadRequest(new
+                {
+                    message = e.Message
+                });
+            }
+
+        }
+
+        [HttpPut("/user/edit/{username}")]
+        [Authorize(Policy = Policies.ADMIN)]
+        public IActionResult editUser([FromBody] UserDTO user, string username) {
+            IActionResult response;
+            try
+            {
+                userService.editUser(user, username);
+                response = Ok(); 
+                return response;
+            }
+            catch (UserNotFoundException e) {
+                return response = BadRequest(new
+                {
+                    message = e.Message
+                });
+            }
+
+        }
+
+        [HttpDelete("/user/{username}")]
+        [Authorize(Policy = Policies.ADMIN)]
+        public IActionResult deleteUser(string username)
+        {
+            IActionResult response;
+            try
+            {
+                userService.deleteUser(username);
+                response = Ok();
+                return response;
+            }
+            catch (UserNotFoundException e)
+            {
+                return response = BadRequest(new
+                {
+                    message = e.Message
+                });
+            }
+
+        }
+
         private string GenerateJWTToken(User user)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:SecretKey"]));
@@ -151,41 +230,6 @@ namespace HospitalApi.Controllers
             signingCredentials: credentials
             );
             return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-
-        [HttpGet("/employees")]
-        [Authorize(Policy = Policies.USER)]
-        public IEnumerable<Employee> findAllEmployees()
-        {
-            return userService.findAllEmployees();
-        }
-
-        [HttpGet("/users")]
-        [Authorize(Policy = Policies.ADMIN)]
-        public IEnumerable<User> findAllUsersForAdmin()
-        {
-            return userService.getAllUsers();
-        }
-
-        [HttpPut("/user/edit/{username}")]
-        [Authorize(Policy = Policies.ADMIN)]
-        public IActionResult editUser([FromBody] UserDTO user, string username) {
-            IActionResult response;
-            try
-            {
-                User newUser = userService.editUser(user, username);
-                response = Ok(new {
-                    user = newUser
-                }); 
-                return response;
-            }
-            catch (UserNotFoundException e) {
-                return response = BadRequest(new
-                {
-                    message = e.Message
-                });
-            }
-
         }
     } 
 }

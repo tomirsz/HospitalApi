@@ -1,18 +1,14 @@
 ﻿
-public class UserDTO
-{
-    private string username;
-    private string password;
+public class UserDTO {
+
     private string firstName;
     private string lastName;
     private string pesel;
     private string specialization;
     private string pwz;
 
-    public UserDTO(string username, string password, string firstName, string lastName, string pesel, string specialization, string pwz)
+    public UserDTO(string firstName, string lastName, string pesel, string specialization, string pwz)
     {
-        this.username = username;
-        this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.pesel = pesel;
@@ -20,17 +16,6 @@ public class UserDTO
         this.pwz = pwz;
     }
 
-    public string Username
-    {
-        get { return this.username; }
-        set { this.username = value; }
-    }
-
-    public string Password
-    {
-        get { return this.password; }
-        set { this.password = value; }
-    }
 
     public string FirstName
     {

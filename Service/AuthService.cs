@@ -14,7 +14,7 @@ public class AuthService
     {
         try
         {
-            User user = userService.findUser(username);
+            User user = userService.getUser(username);
             if (user != null)
             {
                 return verifyPassword(user, password);

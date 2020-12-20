@@ -9,6 +9,8 @@ public class DutyController : ControllerBase
 {
     private readonly UserService userService = UserService.Instance();
     private readonly DutyService dutyService = DutyService.Instance();
+    private readonly SerializeService serializeService = SerializeService.Instance();
+
 
     [HttpPost]
     [Route("/duty/add")]
@@ -17,9 +19,16 @@ public class DutyController : ControllerBase
         IActionResult response;
         try
         {
-            Employee user = (Employee)userService.findUser(dto.Username);
-            Duty duty = new Duty(DateTime.Parse(dto.Date), (Specialization)Enum.Parse(typeof(Specialization), dto.Specialization));
-            dutyService.addDuty(user, duty);
+            User user = userService.getUser(dto.Username); ;
+            Duty duty = null;
+            if (dto.Specialization != null)
+            {
+               duty = new Duty(DateTime.Parse(dto.Date), (Specialization)Enum.Parse(typeof(Specialization), dto.Specialization));
+            }
+            else {
+               duty = new Duty(DateTime.Parse(dto.Date));
+            }
+                dutyService.addDuty((Employee)user, duty);
             response = Ok(new
             {
                 date = duty.Date,

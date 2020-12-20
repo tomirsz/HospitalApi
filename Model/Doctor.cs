@@ -4,7 +4,7 @@ public class Doctor : Employee
 
     private Specialization specialization;
     private string pwz;
-    public Doctor(string username, string password, string firstName, string lastName, string pesel, Specialization specialization, string pwz) : base(username, password, firstName, lastName, pesel)
+    public Doctor(string username, string password, string firstName, string lastName, string pesel, string role, Specialization specialization, string pwz) : base(username, password, firstName, lastName, pesel, role)
     {
         this.specialization = specialization;
         this.pwz = pwz;

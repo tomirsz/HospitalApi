@@ -52,6 +52,19 @@ namespace HospitalApi
                 config.AddPolicy(Policies.USER, Policies.UserPolicy());
             });
             services.AddControllers();
+            services.AddCors(
+                options =>
+                {
+                    options.AddPolicy("VueCorsPolicy", builder =>
+                    {
+                        builder
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials()
+                        .WithOrigins("http://localhost:8080");
+
+                    });
+                });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "HospitalApi", Version = "v1" });
@@ -68,9 +81,12 @@ namespace HospitalApi
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "HospitalApi v1"));
             }
 
+            app.UseCors("VueCorsPolicy");
+
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
 
             app.UseAuthentication();
 

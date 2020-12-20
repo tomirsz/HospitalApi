@@ -87,7 +87,7 @@ public class DutyService
 
     private bool specializationIsValid(Employee employee, Duty duty)
     {
-        if (employee.GetType() == typeof(Doctor))
+        if (duty.Specialization != Specialization.NURSE && employee.GetType() == typeof(Doctor))
         {
             return checkSpecialization(duty);
         }

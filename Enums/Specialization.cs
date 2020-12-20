@@ -4,7 +4,8 @@ using System.Collections.Generic;
 public enum Specialization
 {
     INTERNIST,
-    PEDIATRIST
+    PEDIATRIST,
+    NURSE
 }
 
 static class SpecializationMap

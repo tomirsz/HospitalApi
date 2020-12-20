@@ -4,6 +4,11 @@ public class Duty
     private DateTime date;
     private Specialization specialization;
 
+    public Duty(DateTime date) {
+        this.date = date;
+        this.specialization = Specialization.NURSE;
+    }
+
     public Duty(DateTime date, Specialization specialization)
     {
         this.date = date;

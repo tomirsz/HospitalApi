@@ -28,13 +28,12 @@ public class UserService
         set { this.users = value; }
     }
 
-    public User createUser(string username, string password)
+    public User createUser(string username, string password, string firstName, string lastName, string pesel)
     {
-        User user = new User(username, BCrypt.Net.BCrypt.HashPassword(password));
+        User user = new User(username, BCrypt.Net.BCrypt.HashPassword(password), firstName, lastName, pesel, "ADMIN");
         try
         {
             checkUsernameIsUnique(username);
-            user.Role = "ADMIN";
             users.Add(user);
             serializeService.Serialize(this.users);
             return user;
@@ -48,11 +47,10 @@ public class UserService
 
     public Employee createNurse(string username, string password, string firstName, string lastName, string pesel)
     {
-        Employee user = new Nurse(username, BCrypt.Net.BCrypt.HashPassword(password), firstName, lastName, pesel);
+        Nurse user = new Nurse(username, BCrypt.Net.BCrypt.HashPassword(password), firstName, lastName, pesel, "NURSE");
         try
         {
             checkUsernameIsUnique(username);
-            user.Role = "USER";
             users.Add(user);
             serializeService.Serialize(this.users);
             return user;
@@ -64,14 +62,13 @@ public class UserService
         }
     }
 
-    public Employee createDoctor(string username, string password, string firstName, string lastName, string pesel, Specialization specialization, string pwz)
+    public Doctor createDoctor(string username, string password, string firstName, string lastName, string pesel, Specialization specialization, string pwz)
     {
-        Employee user = new Doctor(username, BCrypt.Net.BCrypt.HashPassword(password), firstName, lastName, pesel, specialization, pwz);
+        Doctor user = new Doctor(username, BCrypt.Net.BCrypt.HashPassword(password), firstName, lastName, pesel, "DOCTOR", specialization, pwz);
         try
         {
             checkUsernameIsUnique(username);
-            user.Role = "USER";
-            users.Add(user);
+            users.Add((Doctor)user);
             serializeService.Serialize(this.users);
             return user;
         }
@@ -80,6 +77,11 @@ public class UserService
             Console.WriteLine(e.Message);
             throw new UserAlreadyExistsException(username);
         }
+    }
+
+    public void saveEmployee(Employee employee) {
+        users.Add(employee);
+        serializeService.Serialize(this.users);
     }
 
     public User Signup(string username, string password) {
@@ -100,12 +102,6 @@ public class UserService
         return BCrypt.Net.BCrypt.Verify(password, user.Password);
     }
 
-    public User findUser(string username)
-    {
-        User user = this.users.Find(user => user.Username == username);
-        return user;
-    }
-
     public void showAllUsersForAdmin()
     {
         foreach (User user in users)
@@ -116,16 +112,27 @@ public class UserService
 
     public List<Employee> findAllEmployees()
     {
-        List<Employee> resultList = new List<Employee>();
-        foreach (User user in users)
-        {
+        List<Employee> results = new List<Employee>();
+        foreach (User user in users) {
             if (user.GetType() != typeof(User))
             {
-                resultList.Add((Employee)user);
+                results.Add((Employee)user);
             }
         }
+        return results;
+     
+    }
 
-        return resultList;
+    public User getUser(string username) {
+        List<User> result = this.users.Where(u => u.Username == username).ToList();
+
+        if (result.Capacity > 0)
+        {
+            return result[0];
+        }
+        else {
+            throw new UserNotFoundException(username);
+        }
     }
 
     public List<User> getAllUsers()
@@ -180,29 +187,48 @@ public class UserService
         if (user == null) {
             throw new UserNotFoundException(username);
         }
-            if (user.GetType() == typeof(User)) {
-                user.Username = editedUser.Username;
-                user.Password = BCrypt.Net.BCrypt.HashPassword(editedUser.Password);
-                return user;
-            } else if(user.GetType() == typeof(Nurse)) {
-                Nurse nurse = getAllNurses().Find(user => user.Username == username);
-                nurse.Username = editedUser.Username;
-                nurse.Password = BCrypt.Net.BCrypt.HashPassword(editedUser.Password);
-                nurse.FirstName = editedUser.FirstName;
-                nurse.LastName = editedUser.LastName;
-                nurse.Pesel = editedUser.Pesel;
-                return nurse;
-            } else {
-                Doctor doctor = getAllDoctors().Find(user => user.Username == username);
-                doctor.Username = editedUser.Username;
-                doctor.Password = BCrypt.Net.BCrypt.HashPassword(editedUser.Password);
-                doctor.FirstName = editedUser.FirstName;
-                doctor.LastName = editedUser.LastName;
-                doctor.Pesel = editedUser.Pesel;
-                doctor.Specialization = (Specialization)Enum.Parse(typeof(Specialization), editedUser.Specialization.ToString());
-                doctor.Pwz = editedUser.Pwz;
-                return doctor;
-            }
+
+        if (editedUser.Specialization == null)
+        {
+            user.FirstName = editedUser.FirstName;
+            user.LastName = editedUser.LastName;
+            user.Pesel = editedUser.Pesel;
+            serializeService.Serialize(this.users);
+            return user;
+        }
+        else if (editedUser.Specialization == "NURSE")
+        {
+            Nurse nurse = getAllNurses().Find(user => user.Username == username);
+            nurse.FirstName = editedUser.FirstName;
+            nurse.LastName = editedUser.LastName;
+            nurse.Pesel = editedUser.Pesel;
+            serializeService.Serialize(this.users);
+            return nurse;
+        }else {
+            Doctor doctor = getAllDoctors().Find(user => user.Username == username);
+            doctor.FirstName = editedUser.FirstName;
+            doctor.LastName = editedUser.LastName;
+            doctor.Pesel = editedUser.Pesel;
+            doctor.Specialization = (Specialization)Enum.Parse(typeof(Specialization), editedUser.Specialization.ToString());
+            doctor.Pwz = editedUser.Pwz;
+            serializeService.Serialize(this.users);
+            return doctor;
+        }
+        
+    }
+
+    public void deleteUser(string username) {
+
+        User user = this.users.Find(user => user.Username == username);
+        if (user == null)
+        {
+            throw new UserNotFoundException(username);
+        }
+        else {
+            this.users.Remove(user);
+            serializeService.Serialize(this.users);
+        }
+
     }
 
 }
