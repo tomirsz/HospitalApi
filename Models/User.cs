@@ -26,9 +26,6 @@ public class User
     [Column("role")]
     public string Role { get; set; }
 
-    //[Column("discriminator")]
-    //public string Discriminator { get; set; }
-
     public User(string username, string password, string firstName, string lastName, string pesel, string role)
     {
         this.Username = username;

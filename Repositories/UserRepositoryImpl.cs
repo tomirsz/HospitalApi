@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 public class UserRepositoryImpl : IUserRepository
 {
@@ -28,14 +29,17 @@ public class UserRepositoryImpl : IUserRepository
         return result.Entity;
     }
 
-    public User deleteUser(int id)
-    {
-        throw new System.NotImplementedException();
-    }
 
     public User updateUser(User user)
     {
         var result = userContext.Update(user);
+        userContext.SaveChanges();
+        return result.Entity;
+    }
+
+    public User deleteUser(User user)
+    {
+        var result = userContext.Remove(user);
         userContext.SaveChanges();
         return result.Entity;
     }
@@ -50,7 +54,38 @@ public class UserRepositoryImpl : IUserRepository
         return result.Entity;
     }
 
+    public Nurse updateNurse(Nurse nurse)
+    {
+        var result = userContext.Update(nurse);
+        userContext.SaveChanges();
+        return result.Entity;
+    }
+
+    public Doctor CreateDoctor(Doctor doctor) {
+        var result = userContext.Add(doctor);
+        userContext.SaveChanges();
+        return result.Entity;
+    }
+
+    public Nurse updateDoctor(Doctor doctor)
+    {
+        var result = userContext.Update(doctor);
+        userContext.SaveChanges();
+        return result.Entity;
+    }
+
     public Duty CreateDuty(Duty duty) {
+        var result = userContext.Add(duty);
+        userContext.SaveChanges();
+        return result.Entity;
+    }
+
+    public Duty GetDutyById(int id) {
+        var result = userContext.Duty.SingleOrDefault(d => d.Id == id);
+        return result;
+    }
+
+    public Duty SaveDuty(Duty duty) {
         var result = userContext.Add(duty);
         userContext.SaveChanges();
         return result.Entity;
@@ -58,14 +93,18 @@ public class UserRepositoryImpl : IUserRepository
 
     public List<Nurse> FindAllNurses()
     {
-        var result = userContext.Nurse.ToList();
-        return result;
+        return userContext.Nurse.Include(d => d.duty).ToList();
     }
 
-    public Nurse updateNurse(Nurse nurse) {
-        var result = userContext.Update(nurse);
-        userContext.SaveChanges();
-        return result.Entity;
+    public List<User> GetAllUsers()
+    {
+        //Don't know how it works, but need it to fetch Duties for nurses and doctors
+        userContext.Nurse.Include(d => d.duty).ToList();
+        userContext.Doctor.Include(d => d.duty).ToList();
+        return userContext.Users.ToList();
     }
 
+    public Nurse FindNurseByUsername(string username) {
+        return userContext.Nurse.Where(u => u.Username.Equals(username)).FirstOrDefault();
+    }
 }

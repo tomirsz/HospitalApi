@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+using HospitalApi.Exceptions;
 
 public class DutyService
 {
@@ -32,7 +32,6 @@ public class DutyService
             {
                 nurse.duty.Add(duty);
                 userRepository.updateNurse(nurse);
-                //userRepository.CreateDuty(duty);
                 return true;
             }
             throw new DutySpecializationException(duty.Specialization);
@@ -41,6 +40,56 @@ public class DutyService
         {
             throw new DutyDateException(duty.Date);
         }
+    }
+
+    public Duty FindById(int id)
+    {
+        Duty duty = userRepository.GetDutyById(id);
+        return duty;
+    }
+
+    public bool EditDuty(EditDutyDto dto, string username, int id) {
+        Nurse user = userRepository.FindNurseByUsername(username);
+        Duty duty = userRepository.GetDutyById(id);
+        if (user == null) {
+            throw new UserNotFoundException(user.Username);
+        }
+        if (duty == null) {
+            throw new DutyNotFoundException(duty.Id);
+        }
+        if (dateIsValid(user, duty)) {
+
+            if (specializationIsValid(user, duty)) {
+                user.duty.Remove(duty);
+                duty.Date = DateTime.Parse(dto.Date);
+                user.duty.Add(duty);
+                userRepository.updateNurse(user);
+                return true;
+            }
+            throw new DutySpecializationException(duty.Specialization);
+        }
+        else
+        {
+            throw new DutyDateException(DateTime.Parse(dto.Date));
+        }       
+    }
+
+    public void DeleteDuty(string username, int id)
+    {
+        Nurse user = userRepository.FindNurseByUsername(username);
+        Duty duty = userRepository.GetDutyById(id);
+        if (user == null)
+        {
+            throw new UserNotFoundException(user.Username);
+        }
+        if (duty == null)
+        {
+            throw new DutyNotFoundException(duty.Id);
+        }
+
+        user.duty.Remove(duty);
+        userRepository.updateNurse(user);
+
     }
 
     private bool dateIsValid(Nurse nurse, Duty duty)

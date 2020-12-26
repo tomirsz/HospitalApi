@@ -8,7 +8,9 @@ namespace HospitalApi.Models
     public class Policies
     {
         public const string ADMIN = "ADMIN";
-        public const string USER = "USER";
+        public const string NURSE = "NURSE";
+        public const string DOCTOR = "DOCTOR";
+
 
         public static AuthorizationPolicy AdminPolicy()
         {
@@ -22,7 +24,7 @@ namespace HospitalApi.Models
         {
             return new AuthorizationPolicyBuilder()
                 .RequireAuthenticatedUser()
-                .RequireRole(USER)
+                .RequireRole(NURSE, DOCTOR)
                 .Build();
         }
     }

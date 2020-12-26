@@ -52,8 +52,6 @@ public class UserService
         {
             checkUsernameIsUnique(username);
             userRepository.CreateNurse(user);
-            //users.Add(user);
-            //serializeService.Serialize(this.users);
             return user;
         }
         catch (UserAlreadyExistsException e)
@@ -69,8 +67,7 @@ public class UserService
         try
         {
             checkUsernameIsUnique(username);
-            users.Add(user);
-            serializeService.Serialize(this.users);
+            userRepository.CreateDoctor(user);
             return user;
         }
         catch (UserAlreadyExistsException e)
@@ -112,11 +109,11 @@ public class UserService
     }
 
     public User getUser(string username) {
-        List<User> result = this.users.Where(u => u.Username == username).ToList();
+        User user = userRepository.FindByUsername(username);
 
-        if (result.Capacity > 0)
+        if (user != null)
         {
-            return result[0];
+            return user;
         }
         else {
             throw new UserNotFoundException(username);
@@ -125,7 +122,7 @@ public class UserService
 
     public List<User> getAllUsers()
     {
-        return this.users;
+        return userRepository.GetAllUsers();
     }
 
     public List<Nurse> getAllNurses()
@@ -171,52 +168,56 @@ public class UserService
 
     public User editUser(UserDTO editedUser, string username) {
 
-            User user = this.users.Find(user => user.Username == username);
+        User user = userRepository.FindByUsername(username);
         if (user == null) {
             throw new UserNotFoundException(username);
         }
 
-        if (editedUser.Specialization == null)
-        {
-            user.FirstName = editedUser.FirstName;
-            user.LastName = editedUser.LastName;
-            user.Pesel = editedUser.Pesel;
-            serializeService.Serialize(this.users);
-            return user;
-        }
-        else if (editedUser.Specialization == "NURSE")
-        {
-            Nurse nurse = getAllNurses().Find(user => user.Username == username);
-            nurse.FirstName = editedUser.FirstName;
-            nurse.LastName = editedUser.LastName;
-            nurse.Pesel = editedUser.Pesel;
-            serializeService.Serialize(this.users);
-            return nurse;
-        }else {
-            Doctor doctor = getAllDoctors().Find(user => user.Username == username);
-            doctor.FirstName = editedUser.FirstName;
-            doctor.LastName = editedUser.LastName;
-            doctor.Pesel = editedUser.Pesel;
-            doctor.Specialization = (Specialization)Enum.Parse(typeof(Specialization), editedUser.Specialization.ToString());
-            doctor.Pwz = editedUser.Pwz;
-            serializeService.Serialize(this.users);
-            return doctor;
-        }
+        user.FirstName = editedUser.FirstName;
+        user.LastName = editedUser.LastName;
+        user.Pesel = editedUser.Pesel;
+        return userRepository.updateUser(user);
+
+        //if (editedUser.Specialization == null)
+        //{
+        //    user.FirstName = editedUser.FirstName;
+        //    user.LastName = editedUser.LastName;
+        //    user.Pesel = editedUser.Pesel;
+        //    serializeService.Serialize(this.users);
+        //    return user;
+        //}
+        //else if (editedUser.Specialization == "NURSE")
+        //{
+        //    Nurse nurse = getAllNurses().Find(user => user.Username == username);
+        //    nurse.FirstName = editedUser.FirstName;
+        //    nurse.LastName = editedUser.LastName;
+        //    nurse.Pesel = editedUser.Pesel;
+        //    serializeService.Serialize(this.users);
+        //    return nurse;
+        //}else {
+        //    Doctor doctor = getAllDoctors().Find(user => user.Username == username);
+        //    doctor.FirstName = editedUser.FirstName;
+        //    doctor.LastName = editedUser.LastName;
+        //    doctor.Pesel = editedUser.Pesel;
+        //    doctor.Specialization = (Specialization)Enum.Parse(typeof(Specialization), editedUser.Specialization.ToString());
+        //    doctor.Pwz = editedUser.Pwz;
+        //    serializeService.Serialize(this.users);
+        //    return doctor;
+        //}
         
     }
 
     public void deleteUser(string username) {
 
-        User user = this.users.Find(user => user.Username == username);
+        User user = userRepository.FindByUsername(username);
         if (user == null)
         {
             throw new UserNotFoundException(username);
         }
-        else {
-            this.users.Remove(user);
-            serializeService.Serialize(this.users);
+        else
+        {
+            userRepository.deleteUser(user);
         }
-
     }
 
 }

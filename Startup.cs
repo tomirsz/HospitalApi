@@ -32,6 +32,9 @@ namespace HospitalApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options => {
                     options.RequireHttpsMetadata = false;
@@ -50,7 +53,7 @@ namespace HospitalApi
                 });
             services.AddAuthorization(config => {
                 config.AddPolicy(Policies.ADMIN, Policies.AdminPolicy());
-                config.AddPolicy(Policies.USER, Policies.UserPolicy());
+                config.AddPolicy(Policies.NURSE, Policies.UserPolicy());
             });
             services.AddControllers();
             services.AddCors(

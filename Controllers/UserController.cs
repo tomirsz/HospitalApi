@@ -134,7 +134,7 @@ namespace HospitalApi.Controllers
 
 
         [HttpGet("/employees")]
-        [Authorize(Policy = Policies.ADMIN)]
+        [Authorize(Policy = Policies.NURSE)]
         public IEnumerable<Nurse> findAllNurses()
         {
             return userService.findAllEmployees();
