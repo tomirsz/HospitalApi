@@ -7,6 +7,7 @@ using System.Text;
 public class DutyService
 {
     private UserService userService = UserService.Instance();
+    private readonly UserRepositoryImpl userRepository = UserRepositoryImpl.Instance();
     private static DutyService instance;
 
     protected DutyService()
@@ -23,13 +24,15 @@ public class DutyService
         return instance;
     }
 
-    public bool addDuty(Employee employee, Duty duty)
+    public bool addDuty(Nurse nurse, Duty duty)
     {
-        if (dateIsValid(employee, duty))
+        if (dateIsValid(nurse, duty))
         {
-            if (specializationIsValid(employee, duty))
+            if (specializationIsValid(nurse, duty))
             {
-                employee.Duty.Add(duty);
+                nurse.duty.Add(duty);
+                userRepository.updateNurse(nurse);
+                //userRepository.CreateDuty(duty);
                 return true;
             }
             throw new DutySpecializationException(duty.Specialization);
@@ -40,9 +43,9 @@ public class DutyService
         }
     }
 
-    private bool dateIsValid(Employee employee, Duty duty)
+    private bool dateIsValid(Nurse nurse, Duty duty)
     {
-        List<Duty> employeDuties = employee.Duty;
+        List<Duty> employeDuties = nurse.duty;
         if (employeDuties.Capacity <= 0)
         {
             return true;
@@ -85,9 +88,9 @@ public class DutyService
         return date == duty.Date || date == duty.Date.AddDays(1) || date == duty.Date.AddDays(-1);
     }
 
-    private bool specializationIsValid(Employee employee, Duty duty)
+    private bool specializationIsValid(Nurse nurse, Duty duty)
     {
-        if (duty.Specialization != Specialization.NURSE && employee.GetType() == typeof(Doctor))
+        if (duty.Specialization != Specialization.NURSE && nurse.GetType() == typeof(Doctor))
         {
             return checkSpecialization(duty);
         }
@@ -101,7 +104,7 @@ public class DutyService
     private bool checkSpecialization(Duty duty)
     {
         List<Doctor> result = userService.getAllDoctors().Where(
-            doc => doc.Duty.Any(
+            doc => doc.duty.Any(
                 d => d.Specialization == duty.Specialization && d.Date.Date == duty.Date.Date)).ToList();
         if (result.Capacity > 0)
         {

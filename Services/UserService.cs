@@ -9,6 +9,7 @@ public class UserService
     private List<User> users;
     private static UserService instance;
     private readonly SerializeService serializeService = SerializeService.Instance();
+    private readonly UserRepositoryImpl userRepository = UserRepositoryImpl.Instance();
 
     protected UserService() {
         this.users = serializeService.deserialize();
@@ -34,8 +35,7 @@ public class UserService
         try
         {
             checkUsernameIsUnique(username);
-            users.Add(user);
-            serializeService.Serialize(this.users);
+            userRepository.CreateUser(user);
             return user;
         }
         catch (UserAlreadyExistsException e)
@@ -45,14 +45,15 @@ public class UserService
         }
     }
 
-    public Employee createNurse(string username, string password, string firstName, string lastName, string pesel)
+    public Nurse createNurse(string username, string password, string firstName, string lastName, string pesel)
     {
         Nurse user = new Nurse(username, BCrypt.Net.BCrypt.HashPassword(password), firstName, lastName, pesel, "NURSE");
         try
         {
             checkUsernameIsUnique(username);
-            users.Add(user);
-            serializeService.Serialize(this.users);
+            userRepository.CreateNurse(user);
+            //users.Add(user);
+            //serializeService.Serialize(this.users);
             return user;
         }
         catch (UserAlreadyExistsException e)
@@ -68,7 +69,7 @@ public class UserService
         try
         {
             checkUsernameIsUnique(username);
-            users.Add((Doctor)user);
+            users.Add(user);
             serializeService.Serialize(this.users);
             return user;
         }
@@ -79,13 +80,8 @@ public class UserService
         }
     }
 
-    public void saveEmployee(Employee employee) {
-        users.Add(employee);
-        serializeService.Serialize(this.users);
-    }
-
     public User Signup(string username, string password) {
-        User user = this.users.Find(user => user.Username == username);
+        User user = userRepository.FindByUsername(username);
         if (user != null) {
             if (checkPassword(user, password))
             {
@@ -100,23 +96,15 @@ public class UserService
 
     private Boolean checkPassword(User user, string password) {
         return BCrypt.Net.BCrypt.Verify(password, user.Password);
-    }
+    } 
 
-    public void showAllUsersForAdmin()
+    public List<Nurse> findAllEmployees()
     {
-        foreach (User user in users)
-        {
-            Console.WriteLine(user.ToString());
-        }
-    }
-
-    public List<Employee> findAllEmployees()
-    {
-        List<Employee> results = new List<Employee>();
+        List<Nurse> results = userRepository.FindAllNurses();
         foreach (User user in users) {
             if (user.GetType() != typeof(User))
             {
-                results.Add((Employee)user);
+                results.Add((Nurse)user);
             }
         }
         return results;
@@ -170,8 +158,8 @@ public class UserService
 
     private bool checkUsernameIsUnique(string username)
     {
-        List<User> users = this.users.Where(u => u.Username == username).ToList();
-        if (users.Capacity > 0)
+        User user = userRepository.FindByUsername(username);
+        if (user != null)
         {
             throw new UserAlreadyExistsException(username);
         }

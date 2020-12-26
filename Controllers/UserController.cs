@@ -81,12 +81,12 @@ namespace HospitalApi.Controllers
         [HttpPost]
         [AllowAnonymous]
         [Route("/register/nurse")]
-        public IActionResult registerNurse([FromBody] Employee login)
+        public IActionResult registerNurse([FromBody] Nurse login)
         {
             IActionResult response = Unauthorized();
             try
             {
-                Employee user = userService.createNurse(login.Username, login.Password, login.FirstName, login.LastName, login.Pesel);
+                Nurse user = userService.createNurse(login.Username, login.Password, login.FirstName, login.LastName, login.Pesel);
                 var tokenString = GenerateJWTToken(user);
                 response = Ok(new
                 {
@@ -113,7 +113,7 @@ namespace HospitalApi.Controllers
             IActionResult response = Unauthorized();
             try
             {
-                Employee user = userService.createDoctor(login.Username, login.Password, login.FirstName, login.LastName, login.Pesel, (Specialization) Enum.Parse(typeof(Specialization), login.Specialization.ToString()), login.Pwz);
+                Doctor user = userService.createDoctor(login.Username, login.Password, login.FirstName, login.LastName, login.Pesel, (Specialization) Enum.Parse(typeof(Specialization), login.Specialization.ToString()), login.Pwz);
                 var tokenString = GenerateJWTToken(user);
                 response = Ok(new
                 {
@@ -134,8 +134,8 @@ namespace HospitalApi.Controllers
 
 
         [HttpGet("/employees")]
-        [Authorize(Policy = Policies.USER)]
-        public IEnumerable<Employee> findAllEmployees()
+        [Authorize(Policy = Policies.ADMIN)]
+        public IEnumerable<Nurse> findAllNurses()
         {
             return userService.findAllEmployees();
         }

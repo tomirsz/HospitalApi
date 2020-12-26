@@ -10,6 +10,7 @@ public class DutyController : ControllerBase
     private readonly UserService userService = UserService.Instance();
     private readonly DutyService dutyService = DutyService.Instance();
     private readonly SerializeService serializeService = SerializeService.Instance();
+    private readonly UserRepositoryImpl userRepository = UserRepositoryImpl.Instance();
 
 
     [HttpPost]
@@ -19,7 +20,8 @@ public class DutyController : ControllerBase
         IActionResult response;
         try
         {
-            User user = userService.getUser(dto.Username); ;
+            User user = userRepository.FindByUsername(dto.Username);
+
             Duty duty = null;
             if (dto.Specialization != null)
             {
@@ -28,7 +30,7 @@ public class DutyController : ControllerBase
             else {
                duty = new Duty(DateTime.Parse(dto.Date));
             }
-                dutyService.addDuty((Employee)user, duty);
+                dutyService.addDuty((Nurse)user, duty);
             response = Ok(new
             {
                 date = duty.Date,
