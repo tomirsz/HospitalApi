@@ -51,16 +51,18 @@ public class DutyService
     public bool EditDuty(EditDutyDto dto, string username, int id) {
         Nurse user = userRepository.FindNurseByUsername(username);
         Duty duty = userRepository.GetDutyById(id);
+        Duty newDuty = new Duty(DateTime.Parse(dto.Date), duty.Specialization);
         if (user == null) {
             throw new UserNotFoundException(user.Username);
         }
         if (duty == null) {
             throw new DutyNotFoundException(duty.Id);
         }
-        if (dateIsValid(user, duty)) {
+        user.duty.Remove(duty);
+        if (dateIsValid(user, newDuty)) {
 
-            if (specializationIsValid(user, duty)) {
-                user.duty.Remove(duty);
+            if (specializationIsValid(user, newDuty)) {
+             
                 duty.Date = DateTime.Parse(dto.Date);
                 user.duty.Add(duty);
                 userRepository.updateNurse(user);
