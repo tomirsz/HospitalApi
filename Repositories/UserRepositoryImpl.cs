@@ -30,14 +30,14 @@ public class UserRepositoryImpl : IUserRepository
     }
 
 
-    public User updateUser(User user)
+    public User UpdateUser(User user)
     {
         var result = userContext.Update(user);
         userContext.SaveChanges();
         return result.Entity;
     }
 
-    public User deleteUser(User user)
+    public User DeleteUser(User user)
     {
         var result = userContext.Remove(user);
         userContext.SaveChanges();
@@ -54,7 +54,7 @@ public class UserRepositoryImpl : IUserRepository
         return result.Entity;
     }
 
-    public Nurse updateNurse(Nurse nurse)
+    public Nurse UpdateNurse(Nurse nurse)
     {
         var result = userContext.Update(nurse);
         userContext.SaveChanges();
@@ -67,7 +67,7 @@ public class UserRepositoryImpl : IUserRepository
         return result.Entity;
     }
 
-    public Nurse updateDoctor(Doctor doctor)
+    public Nurse UpdateDoctor(Doctor doctor)
     {
         var result = userContext.Update(doctor);
         userContext.SaveChanges();

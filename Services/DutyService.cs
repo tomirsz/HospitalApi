@@ -24,14 +24,14 @@ public class DutyService
         return instance;
     }
 
-    public bool addDuty(Nurse nurse, Duty duty)
+    public bool AddDuty(Nurse nurse, Duty duty)
     {
-        if (dateIsValid(nurse, duty))
+        if (DateIsValid(nurse, duty))
         {
-            if (specializationIsValid(nurse, duty))
+            if (SpecializationIsValid(nurse, duty))
             {
                 nurse.duty.Add(duty);
-                userRepository.updateNurse(nurse);
+                userRepository.UpdateNurse(nurse);
                 return true;
             }
             throw new DutySpecializationException(duty.Specialization);
@@ -59,13 +59,13 @@ public class DutyService
             throw new DutyNotFoundException(duty.Id);
         }
         user.duty.Remove(duty);
-        if (dateIsValid(user, newDuty)) {
+        if (DateIsValid(user, newDuty)) {
 
-            if (specializationIsValid(user, newDuty)) {
+            if (SpecializationIsValid(user, newDuty)) {
              
                 duty.Date = DateTime.Parse(dto.Date);
                 user.duty.Add(duty);
-                userRepository.updateNurse(user);
+                userRepository.UpdateNurse(user);
                 return true;
             }
             throw new DutySpecializationException(duty.Specialization);
@@ -90,11 +90,11 @@ public class DutyService
         }
 
         user.duty.Remove(duty);
-        userRepository.updateNurse(user);
+        userRepository.UpdateNurse(user);
 
     }
 
-    private bool dateIsValid(Nurse nurse, Duty duty)
+    private bool DateIsValid(Nurse nurse, Duty duty)
     {
         List<Duty> employeDuties = nurse.duty;
         if (employeDuties.Capacity <= 0)
@@ -102,20 +102,20 @@ public class DutyService
             return true;
         }
 
-        return checkDuties(employeDuties, duty);
+        return CheckDuties(employeDuties, duty);
     }
 
-    private bool checkDuties(List<Duty> employeeDuties, Duty duty)
+    private bool CheckDuties(List<Duty> employeeDuties, Duty duty)
     {
 
-        if (checkNumberOfDutiesInCurrentMonth(employeeDuties, duty))
+        if (CheckNumberOfDutiesInCurrentMonth(employeeDuties, duty))
         {
             return false;
         }
 
         foreach (Duty employeeCurrentDuty in employeeDuties)
         {
-            if (compareDate(employeeCurrentDuty.Date, duty))
+            if (CompareDate(employeeCurrentDuty.Date, duty))
                 {
                     return false;
                 }
@@ -123,7 +123,7 @@ public class DutyService
         return true;
     }
 
-    private bool checkNumberOfDutiesInCurrentMonth(List<Duty> employeeDuties, Duty duty)
+    private bool CheckNumberOfDutiesInCurrentMonth(List<Duty> employeeDuties, Duty duty)
     {
         List<Duty> result = employeeDuties.Where(d => d.Date.Month == duty.Date.Month).ToList();
         int resultSize = result.Count;
@@ -134,16 +134,16 @@ public class DutyService
         return false;
     }
 
-    private bool compareDate(DateTime date, Duty duty)
+    private bool CompareDate(DateTime date, Duty duty)
     {
         return date == duty.Date || date == duty.Date.AddDays(1) || date == duty.Date.AddDays(-1);
     }
 
-    private bool specializationIsValid(Nurse nurse, Duty duty)
+    private bool SpecializationIsValid(Nurse nurse, Duty duty)
     {
         if (duty.Specialization != Specialization.NURSE && nurse.GetType() == typeof(Doctor))
         {
-            return checkSpecialization(duty);
+            return CheckSpecialization(duty);
         }
         else
         {
@@ -152,9 +152,9 @@ public class DutyService
 
     }
 
-    private bool checkSpecialization(Duty duty)
+    private bool CheckSpecialization(Duty duty)
     {
-        List<Doctor> result = userService.getAllDoctors().Where(
+        List<Doctor> result = userService.GetAllDoctors().Where(
             doc => doc.duty.Any(
                 d => d.Specialization == duty.Specialization && d.Date.Date == duty.Date.Date)).ToList();
         if (result.Capacity > 0)

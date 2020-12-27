@@ -6,13 +6,10 @@ using HospitalApi.Exceptions;
 public class UserService
 {
 
-    private List<User> users;
     private static UserService instance;
-    private readonly SerializeService serializeService = SerializeService.Instance();
     private readonly UserRepositoryImpl userRepository = UserRepositoryImpl.Instance();
 
     protected UserService() {
-        this.users = serializeService.deserialize();
     }
 
     public static UserService Instance() {
@@ -23,56 +20,47 @@ public class UserService
         return instance;
     }
 
-    public List<User> Users
-    {
-        get { return this.users; }
-        set { this.users = value; }
-    }
-
-    public User createUser(string username, string password, string firstName, string lastName, string pesel)
+    public User CreateUser(string username, string password, string firstName, string lastName, string pesel)
     {
         User user = new User(username, BCrypt.Net.BCrypt.HashPassword(password), firstName, lastName, pesel, "ADMIN");
         try
         {
-            checkUsernameIsUnique(username);
+            CheckUsernameIsUnique(username);
             userRepository.CreateUser(user);
             return user;
         }
-        catch (UserAlreadyExistsException e)
+        catch (UserAlreadyExistsException)
         {
-            Console.WriteLine(e.Message);
             throw new UserAlreadyExistsException(username);
-        }
     }
+}
 
-    public Nurse createNurse(string username, string password, string firstName, string lastName, string pesel)
+    public Nurse CreateNurse(string username, string password, string firstName, string lastName, string pesel)
     {
         Nurse user = new Nurse(username, BCrypt.Net.BCrypt.HashPassword(password), firstName, lastName, pesel, "NURSE");
         try
         {
-            checkUsernameIsUnique(username);
+            CheckUsernameIsUnique(username);
             userRepository.CreateNurse(user);
             return user;
         }
-        catch (UserAlreadyExistsException e)
+        catch (UserAlreadyExistsException)
         {
-            Console.WriteLine(e.Message);
             throw new UserAlreadyExistsException(username);
         }
     }
 
-    public Doctor createDoctor(string username, string password, string firstName, string lastName, string pesel, Specialization specialization, string pwz)
+    public Doctor CreateDoctor(string username, string password, string firstName, string lastName, string pesel, Specialization specialization, string pwz)
     {
         Doctor user = new Doctor(username, BCrypt.Net.BCrypt.HashPassword(password), firstName, lastName, pesel, "DOCTOR", specialization, pwz);
         try
         {
-            checkUsernameIsUnique(username);
+            CheckUsernameIsUnique(username);
             userRepository.CreateDoctor(user);
             return user;
         }
-        catch (UserAlreadyExistsException e)
+        catch (UserAlreadyExistsException)
         {
-            Console.WriteLine(e.Message);
             throw new UserAlreadyExistsException(username);
         }
     }
@@ -80,7 +68,7 @@ public class UserService
     public User Signup(string username, string password) {
         User user = userRepository.FindByUsername(username);
         if (user != null) {
-            if (checkPassword(user, password))
+            if (CheckPassword(user, password))
             {
                 return user;
             }
@@ -91,24 +79,16 @@ public class UserService
         throw new AuthException();
     }
 
-    private Boolean checkPassword(User user, string password) {
+    private Boolean CheckPassword(User user, string password) {
         return BCrypt.Net.BCrypt.Verify(password, user.Password);
-    } 
-
-    public List<Nurse> findAllEmployees()
-    {
-        List<Nurse> results = userRepository.FindAllNurses();
-        foreach (User user in users) {
-            if (user.GetType() != typeof(User))
-            {
-                results.Add((Nurse)user);
-            }
-        }
-        return results;
-     
     }
 
-    public User getUser(string username) {
+    public List<Nurse> FindAllEmployees()
+    {
+        return userRepository.FindAllNurses(); ;
+    }
+
+    public User GetUser(string username) {
         User user = userRepository.FindByUsername(username);
 
         if (user != null)
@@ -120,15 +100,15 @@ public class UserService
         }
     }
 
-    public List<User> getAllUsers()
+    public List<User> GetAllUsers()
     {
         return userRepository.GetAllUsers();
     }
 
-    public List<Nurse> getAllNurses()
+    public List<Nurse> GetAllNurses()
     {
         List<Nurse> nurses = new List<Nurse>();
-        List<User> allUsers = getAllUsers();
+        List<User> allUsers = GetAllUsers();
         foreach (User user in allUsers)
         {
             if (user.GetType() == typeof(Nurse))
@@ -139,10 +119,10 @@ public class UserService
         return nurses;
     }
 
-    public List<Doctor> getAllDoctors()
+    public List<Doctor> GetAllDoctors()
     {
         List<Doctor> doctors = new List<Doctor>();
-        List<User> allUsers = getAllUsers();
+        List<User> allUsers = GetAllUsers();
         foreach (User user in allUsers)
         {
             if (user.GetType() == typeof(Doctor))
@@ -153,7 +133,7 @@ public class UserService
         return doctors;
     }
 
-    private bool checkUsernameIsUnique(string username)
+    private bool CheckUsernameIsUnique(string username)
     {
         User user = userRepository.FindByUsername(username);
         if (user != null)
@@ -166,7 +146,7 @@ public class UserService
         }
     }
 
-    public User editUser(UserDTO editedUser, string username) {
+    public User EditUser(UserDTO editedUser, string username) {
 
         User user = userRepository.FindByUsername(username);
         if (user == null) {
@@ -176,7 +156,7 @@ public class UserService
         user.FirstName = editedUser.FirstName;
         user.LastName = editedUser.LastName;
         user.Pesel = editedUser.Pesel;
-        return userRepository.updateUser(user);
+        return userRepository.UpdateUser(user);
 
         //if (editedUser.Specialization == null)
         //{
@@ -207,7 +187,7 @@ public class UserService
         
     }
 
-    public void deleteUser(string username) {
+    public void DeleteUser(string username) {
 
         User user = userRepository.FindByUsername(username);
         if (user == null)
@@ -216,7 +196,7 @@ public class UserService
         }
         else
         {
-            userRepository.deleteUser(user);
+            userRepository.DeleteUser(user);
         }
     }
 

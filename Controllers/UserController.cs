@@ -32,7 +32,7 @@ namespace HospitalApi.Controllers
             IActionResult response = Unauthorized();
             try
             {
-                User user = userService.createUser(login.Username, login.Password, login.FirstName, login.LastName, login.Pesel);
+                User user = userService.CreateUser(login.Username, login.Password, login.FirstName, login.LastName, login.Pesel);
                 var tokenString = GenerateJWTToken(user);
                 response = Ok(new
                 {
@@ -80,13 +80,13 @@ namespace HospitalApi.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        [Route("/register/nurse")]
+        [Route("/add/nurse")]
         public IActionResult registerNurse([FromBody] Nurse login)
         {
             IActionResult response = Unauthorized();
             try
             {
-                Nurse user = userService.createNurse(login.Username, login.Password, login.FirstName, login.LastName, login.Pesel);
+                Nurse user = userService.CreateNurse(login.Username, login.Password, login.FirstName, login.LastName, login.Pesel);
                 var tokenString = GenerateJWTToken(user);
                 response = Ok(new
                 {
@@ -107,13 +107,13 @@ namespace HospitalApi.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        [Route("/register/doctor")]
-        public IActionResult registerDoctor([FromBody] DoctorDTO login)
+        [Route("/add/doctor")]
+        public IActionResult RegisterDoctor([FromBody] DoctorDTO login)
         {
             IActionResult response = Unauthorized();
             try
             {
-                Doctor user = userService.createDoctor(login.Username, login.Password, login.FirstName, login.LastName, login.Pesel, (Specialization) Enum.Parse(typeof(Specialization), login.Specialization.ToString()), login.Pwz);
+                Doctor user = userService.CreateDoctor(login.Username, login.Password, login.FirstName, login.LastName, login.Pesel, (Specialization) Enum.Parse(typeof(Specialization), login.Specialization.ToString()), login.Pwz);
                 var tokenString = GenerateJWTToken(user);
                 response = Ok(new
                 {
@@ -135,26 +135,26 @@ namespace HospitalApi.Controllers
 
         [HttpGet("/employees")]
         [Authorize(Policy = Policies.NURSE)]
-        public IEnumerable<Nurse> findAllNurses()
+        public IEnumerable<Nurse> FindAllNurses()
         {
-            return userService.findAllEmployees();
+            return userService.FindAllEmployees();
         }
 
         [HttpGet("/users")]
         [Authorize(Policy = Policies.ADMIN)]
-        public IEnumerable<User> findAllUsersForAdmin()
+        public IEnumerable<User> FindAllUsersForAdmin()
         {
-            return userService.getAllUsers();
+            return userService.GetAllUsers();
         }
 
-        [HttpGet("/user/edit/{username}")]
+        [HttpGet("/user/{username}")]
         [Authorize(Policy = Policies.ADMIN)]
-        public IActionResult getUser(string username)
+        public IActionResult GetUser(string username)
         {
             IActionResult response;
             try
             {
-                User newUser = userService.getUser(username);
+                User newUser = userService.GetUser(username);
                 response = Ok(new
                 {
                     user = newUser
@@ -171,13 +171,13 @@ namespace HospitalApi.Controllers
 
         }
 
-        [HttpPut("/user/edit/{username}")]
+        [HttpPut("/user/{username}")]
         [Authorize(Policy = Policies.ADMIN)]
-        public IActionResult editUser([FromBody] UserDTO user, string username) {
+        public IActionResult EditUser([FromBody] UserDTO user, string username) {
             IActionResult response;
             try
             {
-                userService.editUser(user, username);
+                userService.EditUser(user, username);
                 response = Ok(); 
                 return response;
             }
@@ -192,12 +192,12 @@ namespace HospitalApi.Controllers
 
         [HttpDelete("/user/{username}")]
         [Authorize(Policy = Policies.ADMIN)]
-        public IActionResult deleteUser(string username)
+        public IActionResult DeleteUser(string username)
         {
             IActionResult response;
             try
             {
-                userService.deleteUser(username);
+                userService.DeleteUser(username);
                 response = Ok();
                 return response;
             }

@@ -10,11 +10,11 @@ public class AuthService
         this.userService = userService;
     }
 
-    public bool loginUser(string username, string password)
+    public bool LoginUser(string username, string password)
     {
         try
         {
-            User user = userService.getUser(username);
+            User user = userService.GetUser(username);
             if (user != null)
             {
                 return verifyPassword(user, password);

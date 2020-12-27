@@ -7,7 +7,7 @@ public class DutyDateException : Exception
     {
     }
 
-    public DutyDateException(DateTime date) : base(String.Format("Duty date {0} does not match the schedule", date.Date.ToString()))
+    public DutyDateException(DateTime date) : base(String.Format("Duty date {0} does not match to the schedule", date.Date.ToString()))
     {
     }
 }

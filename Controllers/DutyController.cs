@@ -7,16 +7,28 @@ using HospitalApi.Models;
 [ApiController]
 public class DutyController : ControllerBase
 {
-    private readonly UserService userService = UserService.Instance();
     private readonly DutyService dutyService = DutyService.Instance();
-    private readonly SerializeService serializeService = SerializeService.Instance();
     private readonly UserRepositoryImpl userRepository = UserRepositoryImpl.Instance();
 
+    [HttpGet]
+    [Route("/duty/{id}")]
+    [Authorize(Policy = Policies.ADMIN)]
+    public IActionResult GetDuty(int id)
+    {
+        IActionResult response;
+        Duty duty = dutyService.FindById(id);
+        response = Ok(new
+        {
+            date = duty.Date,
+            specialization = duty.Specialization.ToString()
+        });
+        return response;
+    }
 
     [HttpPost]
     [Route("/duty/add")]
     [Authorize(Policy = Policies.ADMIN)]
-    public IActionResult addDuty([FromBody] DutyDTO dto)
+    public IActionResult AddDuty([FromBody] DutyDTO dto)
     {
         IActionResult response;
         try
@@ -32,7 +44,7 @@ public class DutyController : ControllerBase
             {
                 duty = new Duty(DateTime.Parse(dto.Date));
             }
-            dutyService.addDuty((Nurse)user, duty);
+            dutyService.AddDuty((Nurse)user, duty);
             response = Ok(new
             {
                 date = duty.Date,
@@ -49,26 +61,11 @@ public class DutyController : ControllerBase
         }
     }
 
-    [HttpGet]
-    [Route("/edit/duty/{id}")]
-    [Authorize(Policy = Policies.ADMIN)]
-    public IActionResult getDuty(int id)
-    {
-        IActionResult response;
-        Duty duty = dutyService.FindById(id);
-        response = Ok(new
-        {
-            date = duty.Date,
-            specialization = duty.Specialization.ToString()
-        });
-        return response;
-    }
-
 
     [HttpPut]
-    [Route("/edit/duty/{username}/{id}")]
+    [Route("/duty/{username}/{id}")]
     [Authorize(Policy = Policies.ADMIN)]
-    public IActionResult editDuty([FromBody]EditDutyDto dto, string username, int id)
+    public IActionResult EditDuty([FromBody]EditDutyDto dto, string username, int id)
     {
         IActionResult response;
         try
@@ -85,9 +82,9 @@ public class DutyController : ControllerBase
     }
 
     [HttpDelete]
-    [Route("/edit/duty/{username}/{id}")]
+    [Route("/duty/{username}/{id}")]
     [Authorize(Policy = Policies.ADMIN)]
-    public IActionResult deleteDuty(string username, int id)
+    public IActionResult DeleteDuty(string username, int id)
     {
         IActionResult response;
         try
