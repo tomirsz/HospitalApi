@@ -43,7 +43,7 @@ namespace HospitalApi.Controllers
                 });
                 return response;
             }
-            catch (UserAlreadyExistsException e)
+            catch (Exception e)
             {
                 return response = Unauthorized(new
                 {
@@ -97,7 +97,7 @@ namespace HospitalApi.Controllers
                 });
                 return response;
             }
-            catch (UserAlreadyExistsException e)
+            catch (Exception e)
             {
                 return response = Unauthorized(new
                 {
@@ -124,7 +124,7 @@ namespace HospitalApi.Controllers
                 });
                 return response;
             }
-            catch (UserAlreadyExistsException e)
+            catch (Exception e)
             {
                 return response = Unauthorized(new
                 {
@@ -182,7 +182,7 @@ namespace HospitalApi.Controllers
                 response = Ok(); 
                 return response;
             }
-            catch (UserNotFoundException e) {
+            catch (Exception e) {
                 return response = BadRequest(new
                 {
                     message = e.Message

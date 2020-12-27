@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using HospitalApi.Exceptions;
 using HospitalApiModels;
-
+using System.Linq;
 
 public class UserService
 {
@@ -30,6 +30,9 @@ public class UserService
 
         User user = new User(username, BCrypt.Net.BCrypt.HashPassword(password), firstName, lastName, pesel, role);
         CheckUsernameIsUnique(username);
+        if (!CheckPeselNumber(pesel)) {
+            throw new PeselNotValidException(pesel);
+        }
         userRepository.CreateUser(user);
         return user;
     }
@@ -38,6 +41,10 @@ public class UserService
     {
         Nurse user = new Nurse(username, BCrypt.Net.BCrypt.HashPassword(password), firstName, lastName, pesel, "NURSE");
         CheckUsernameIsUnique(username);
+        if (!CheckPeselNumber(pesel))
+        {
+            throw new PeselNotValidException(pesel);
+        }
         userRepository.CreateNurse(user);
         return user; 
     }
@@ -46,6 +53,10 @@ public class UserService
     {
         Doctor user = new Doctor(username, BCrypt.Net.BCrypt.HashPassword(password), firstName, lastName, pesel, "DOCTOR", specialization, pwz);
         CheckUsernameIsUnique(username);
+        if (!CheckPeselNumber(pesel))
+        {
+            throw new PeselNotValidException(pesel);
+        }
         userRepository.CreateDoctor(user);
         return user;
     }
@@ -62,10 +73,6 @@ public class UserService
             }
         }
         throw new AuthException();
-    }
-
-    private Boolean CheckPassword(User user, string password) {
-        return BCrypt.Net.BCrypt.Verify(password, user.Password);
     }
 
     public List<Nurse> FindAllEmployees()
@@ -104,24 +111,15 @@ public class UserService
         return doctors;
     }
 
-    private bool CheckUsernameIsUnique(string username)
-    {
-        User user = userRepository.FindByUsername(username);
-        if (user != null)
-        {
-            throw new UserAlreadyExistsException(username);
-        }
-        else
-        {
-            return true;
-        }
-    }
-
     public User EditUser(UserDTO editedUser, string username) {
 
         User user = userRepository.FindByUsername(username);
         if (user == null) {
             throw new UserNotFoundException(username);
+        }
+        if (!CheckPeselNumber(editedUser.Pesel))
+        {
+            throw new PeselNotValidException(editedUser.Pesel);
         }
 
         user.FirstName = editedUser.FirstName;
@@ -144,4 +142,74 @@ public class UserService
         }
     }
 
+    private Boolean CheckPassword(User user, string password)
+    {
+        return BCrypt.Net.BCrypt.Verify(password, user.Password);
+    }
+
+    private bool CheckUsernameIsUnique(string username)
+    {
+        User user = userRepository.FindByUsername(username);
+        if (user != null)
+        {
+            throw new UserAlreadyExistsException(username);
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    private static int[] weights = { 9, 7, 3, 1, 9, 7, 3, 1, 9, 7 };
+
+    public static bool CheckPeselNumber(string pesel)
+    {
+        if (IsEmptyOrNotProperLength(pesel))
+            return false;
+
+        if (!IsNumber(pesel))
+            return false;
+
+        if (!IsChecksumValid(pesel))
+            return false;
+
+        if (!HasValidDay(pesel))
+            return false;
+
+        return true;
+    }
+
+    private static bool HasValidDay(string pesel)
+    {
+        var day = int.Parse(pesel.Substring(4, 2));
+
+        return 1 <= day && day <= 31;
+    }
+
+    private static bool IsEmptyOrNotProperLength(string pesel)
+    {
+        return string.IsNullOrWhiteSpace(pesel) || pesel.Length != 11;
+    }
+
+    private static bool IsNumber(string pesel)
+    {
+        return pesel.All(Char.IsDigit);
+    }
+
+    private static bool IsChecksumValid(string pesel)
+    {
+        int checksum = CalculateChecksum(pesel);
+
+        return pesel.Last().ToString() == checksum.ToString();
+    }
+
+    private static int CalculateChecksum(string pesel)
+    {
+        int sum = 0;
+
+        for (int i = 0; i < 10; i++)
+            sum += weights[i] * int.Parse(pesel[i].ToString());
+
+        return sum % 10;
+    }
 }
