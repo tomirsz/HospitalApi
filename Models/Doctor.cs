@@ -1,12 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 [Table("doctors")]
 public class Doctor : Nurse
 {
-
+    [Required]
     [Column("specialization")]
     public Specialization Specialization { get; set; }
 
+    [Required]
+    [StringLength(7)]
     [Column("pwz")]
     public string Pwz { get; set; }
 

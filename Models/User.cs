@@ -8,18 +8,23 @@ public class User
     [Column("id")]
     public long Id { get; set; }
 
+    [StringLength(30, MinimumLength = 3)]
     [Column("username")]
     public string Username { get; set; }
 
+    [StringLength(30, MinimumLength = 6)]
     [Column("password")]
     public string Password { get; set; }
 
+    [StringLength(30, MinimumLength = 3)]
     [Column("firstname")]
     public string FirstName { get; set; }
 
+    [StringLength(30, MinimumLength = 3)]
     [Column("lastname")]
     public string LastName { get; set; }
 
+    [StringLength(11, MinimumLength = 11)]
     [Column("pesel")]
     public string Pesel { get; set; }
 

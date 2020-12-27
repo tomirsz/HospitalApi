@@ -54,7 +54,7 @@ namespace HospitalApi.Controllers
         [HttpPost]
         [AllowAnonymous]
         [Route("/signin")]
-        public IActionResult Singin([FromBody] User login)
+        public IActionResult Singin([FromBody] LoginUser login)
         {
             IActionResult response = Unauthorized();
             try

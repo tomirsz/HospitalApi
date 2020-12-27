@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+
+
 namespace HospitalApi.Models
 {
     public class Policies
@@ -11,8 +9,6 @@ namespace HospitalApi.Models
         public const string NURSE = "NURSE";
         public const string DOCTOR = "DOCTOR";
         public const string USER = "USER";
-
-
 
         public static AuthorizationPolicy AdminPolicy()
         {
