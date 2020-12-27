@@ -1,25 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-
-public enum Specialization
+﻿public enum Specialization
 {
-    INTERNIST,
-    PEDIATRIST,
-    NURSE
-}
-
-static class SpecializationMap
-{
-    public static Dictionary<Specialization, string> specializationMap()
-    {
-        var specializations = new Dictionary<Specialization, string>();
-        specializations.Add(Specialization.INTERNIST, "Internistyczna");
-        specializations.Add(Specialization.PEDIATRIST, "Pediatryczna");
-        return specializations;
-    }
-
-    public static string getSpecialization(Specialization specialization)
-    {
-        return specializationMap()[specialization];
-    }
+  ALLERGY_AND_IMMUNOLOGY,
+  ANESTHESIOLOGY,
+  DERMATOLOGY,
+  DIAGNOSTIC_RADIOLOGY,
+  EMERGENCY_MEDICINE,
+  FAMILY_MEDICINE,
+  INTERNAL_MEDICINE,
+  MEDICAL_GENETICS,
+  NEUROLOGY,
+  NUCLEAR_MEDICINE,
+  OBSTETRICS_AND_GYNECOLOGY,
+  OPHTHALMOLOGY,
+  PATHOLOGY,
+  PEDIATRICS,
+  PHYSICAL_MEDICINE_AND_REHABILITATION,
+  PREVENTIVE_MEDICINE,
+  PSYCHIATRY,
+  RADIATION_ONCOLOGY,
+  SURGERY,
+  UROLOGY,
+  NURSE
 }

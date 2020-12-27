@@ -67,13 +67,6 @@ public class UserRepositoryImpl : IUserRepository
         return result.Entity;
     }
 
-    public Nurse UpdateDoctor(Doctor doctor)
-    {
-        var result = userContext.Update(doctor);
-        userContext.SaveChanges();
-        return result.Entity;
-    }
-
     public Duty CreateDuty(Duty duty) {
         var result = userContext.Add(duty);
         userContext.SaveChanges();
@@ -83,12 +76,6 @@ public class UserRepositoryImpl : IUserRepository
     public Duty GetDutyById(int id) {
         var result = userContext.Duty.SingleOrDefault(d => d.Id == id);
         return result;
-    }
-
-    public Duty SaveDuty(Duty duty) {
-        var result = userContext.Add(duty);
-        userContext.SaveChanges();
-        return result.Entity;
     }
 
     public List<Nurse> FindAllNurses()

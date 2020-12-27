@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.OpenApi.Extensions;
 
 [Serializable]
 public class DutySpecializationException : Exception
@@ -7,7 +8,11 @@ public class DutySpecializationException : Exception
     {
     }
 
-    public DutySpecializationException(Specialization specialization) : base(String.Format("Doctor with {0} specialization already has a duty", SpecializationMap.getSpecialization(specialization)))
+    //public DutySpecializationException(Specialization specialization) : base(String.Format("Doctor with {0} specialization already has a duty", SpecializationMap.getSpecialization(specialization)))
+    //{
+    //}
+
+    public DutySpecializationException(Specialization specialization) : base(String.Format("Doctor with {0} specialization already has a duty", specialization.GetDisplayName()))
     {
     }
 }
