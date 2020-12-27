@@ -9,6 +9,7 @@ using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using HospitalApi.Exceptions;
+using HospitalApiModels;
 
 namespace HospitalApi.Controllers
 {

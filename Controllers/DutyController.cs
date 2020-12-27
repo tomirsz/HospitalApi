@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using HospitalApi.Models;
-
+using HospitalApiModels;
 
 [ApiController]
 public class DutyController : ControllerBase

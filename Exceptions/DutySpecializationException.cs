@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.OpenApi.Extensions;
+using HospitalApiModels;
 
 [Serializable]
 public class DutySpecializationException : Exception

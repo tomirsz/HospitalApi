@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using HospitalApi.Exceptions;
+using HospitalApiModels;
+
 
 public class UserService
 {

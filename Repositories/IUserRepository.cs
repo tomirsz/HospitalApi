@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using HospitalApiModels;
 
 public interface IUserRepository
 {
