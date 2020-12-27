@@ -29,46 +29,25 @@ public class UserService
         }
 
         User user = new User(username, BCrypt.Net.BCrypt.HashPassword(password), firstName, lastName, pesel, role);
-        try
-        {
-            CheckUsernameIsUnique(username);
-            userRepository.CreateUser(user);
-            return user;
-        }
-        catch (UserAlreadyExistsException)
-        {
-            throw new UserAlreadyExistsException(username);
+        CheckUsernameIsUnique(username);
+        userRepository.CreateUser(user);
+        return user;
     }
-}
 
     public Nurse CreateNurse(string username, string password, string firstName, string lastName, string pesel)
     {
         Nurse user = new Nurse(username, BCrypt.Net.BCrypt.HashPassword(password), firstName, lastName, pesel, "NURSE");
-        try
-        {
-            CheckUsernameIsUnique(username);
-            userRepository.CreateNurse(user);
-            return user;
-        }
-        catch (UserAlreadyExistsException)
-        {
-            throw new UserAlreadyExistsException(username);
-        }
+        CheckUsernameIsUnique(username);
+        userRepository.CreateNurse(user);
+        return user; 
     }
 
     public Doctor CreateDoctor(string username, string password, string firstName, string lastName, string pesel, Specialization specialization, string pwz)
     {
         Doctor user = new Doctor(username, BCrypt.Net.BCrypt.HashPassword(password), firstName, lastName, pesel, "DOCTOR", specialization, pwz);
-        try
-        {
-            CheckUsernameIsUnique(username);
-            userRepository.CreateDoctor(user);
-            return user;
-        }
-        catch (UserAlreadyExistsException)
-        {
-            throw new UserAlreadyExistsException(username);
-        }
+        CheckUsernameIsUnique(username);
+        userRepository.CreateDoctor(user);
+        return user;
     }
 
     public User Signup(string username, string password) {
