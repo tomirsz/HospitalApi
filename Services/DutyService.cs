@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using HospitalApi.Exceptions;
 using HospitalApiModels;
+using Microsoft.Extensions.Configuration;
+
 
 
 public class DutyService
@@ -128,7 +130,7 @@ public class DutyService
     {
         List<Duty> result = employeeDuties.Where(d => d.Date.Month == duty.Date.Month).ToList();
         int resultSize = result.Count;
-        if (resultSize >= 2)
+        if (resultSize >= 10)
         {
             return true;
         }
