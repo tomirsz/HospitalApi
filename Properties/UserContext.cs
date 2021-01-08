@@ -21,5 +21,4 @@ public class UserContext :DbContext
     public DbSet<Nurse> Nurse { get; set; }
     public DbSet<Duty> Duty { get; set; }
     public DbSet<Doctor> Doctor { get; set; }
-
 }

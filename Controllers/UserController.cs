@@ -18,7 +18,7 @@ namespace HospitalApi.Controllers
     {
 
         private readonly IConfiguration config;
-        private readonly UserService userService = UserService.Instance();
+        private readonly UserService userService = new UserService();
 
         public UserController(IConfiguration config)
         {

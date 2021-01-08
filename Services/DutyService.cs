@@ -9,22 +9,11 @@ using Microsoft.Extensions.Configuration;
 
 public class DutyService
 {
-    private UserService userService = UserService.Instance();
-    private readonly UserRepositoryImpl userRepository = UserRepositoryImpl.Instance();
-    private static DutyService instance;
+    private UserService userService = new UserService();
+    private readonly UserRepositoryImpl userRepository = new UserRepositoryImpl();
 
-    protected DutyService()
+    public DutyService()
     {
-    }
-
-    public static DutyService Instance()
-    {
-        if (instance == null)
-        {
-            instance = new DutyService();
-        }
-
-        return instance;
     }
 
     public bool AddDuty(Nurse nurse, Duty duty)
@@ -95,6 +84,15 @@ public class DutyService
         user.duty.Remove(duty);
         userRepository.UpdateNurse(user);
 
+    }
+
+    public List<CalendarDto> GetDutiesFromCurrentMonth(int month, int year) {
+        return userRepository.GetDutiesFromCurrentMonth(month, year);
+    }
+
+    public List<CalendarDto> GetDutiesFromCurrentDay(string date)
+    {
+        return userRepository.GetDutiesFromCurrentDay(date);
     }
 
     private bool DateIsValid(Nurse nurse, Duty duty)

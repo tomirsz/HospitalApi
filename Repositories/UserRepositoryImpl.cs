@@ -2,26 +2,17 @@
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using HospitalApiModels;
-
+using System;
+using System.Globalization;
 
 public class UserRepositoryImpl : IUserRepository
 {
 
     private readonly UserContext userContext;
-    private static UserRepositoryImpl instance;
 
-
-    protected UserRepositoryImpl(UserContext userContext)
+    public UserRepositoryImpl()
     {
-        this.userContext = userContext;
-    }
-
-    public static UserRepositoryImpl Instance() {
-        if (instance == null) {
-            instance = new UserRepositoryImpl(new UserContext("User ID = hospitalapi;Password=hospitalapi;Host=localhost;Port=5432;Database=hospitalapi;Integrated Security=true; Pooling=true;"));
-        }
-
-        return instance;
+        this.userContext = new UserContext("User ID = hospitalapi;Password=hospitalapi;Host=localhost;Port=5432;Database=hospitalapi;Integrated Security=true; Pooling=true;");
     }
 
     public User CreateUser(User user)
@@ -95,5 +86,37 @@ public class UserRepositoryImpl : IUserRepository
 
     public Nurse FindNurseByUsername(string username) {
         return userContext.Nurse.Where(u => u.Username.Equals(username)).FirstOrDefault();
+    }
+
+    public List<CalendarDto> GetDutiesFromCurrentMonth(int month, int year) {
+        List<Nurse> users = userContext.Nurse.Include(d => d.duty).ToList();
+        List<CalendarDto> calendarDtos = new List<CalendarDto>();
+        foreach (Nurse nurse in users) {
+            if (nurse.duty.Capacity > 0) {
+               List<Duty> result = nurse.duty.FindAll(d => d.Date.Month == month && d.Date.Year == year).ToList();
+                foreach (Duty d in result) {
+                    calendarDtos.Add(new CalendarDto(nurse.FirstName, nurse.LastName, nurse.Username, d));
+                }
+            }
+        }
+        return calendarDtos;
+    }
+
+    public List<CalendarDto> GetDutiesFromCurrentDay(string date)
+    {
+        List<Nurse> users = userContext.Nurse.Include(d => d.duty).ToList();
+        List<CalendarDto> calendarDtos = new List<CalendarDto>();
+        foreach (Nurse nurse in users)
+        {
+            if (nurse.duty.Capacity > 0)
+            {
+                List<Duty> result = nurse.duty.FindAll(d => d.Date.ToString("yyyy-MM-dd").Equals(date)).ToList();
+                foreach (Duty d in result)
+                {
+                    calendarDtos.Add(new CalendarDto(nurse.FirstName, nurse.LastName, nurse.Username, d));
+                }
+            }
+        }
+        return calendarDtos;
     }
 }

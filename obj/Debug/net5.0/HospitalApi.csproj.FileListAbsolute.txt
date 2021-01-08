@@ -48,3 +48,5 @@
 /Users/tomirszulc/Development/C#/HospitalApi/HospitalApi/HospitalApi/bin/Debug/net5.0/Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
 /Users/tomirszulc/Development/C#/HospitalApi/HospitalApi/HospitalApi/bin/Debug/net5.0/Newtonsoft.Json.dll
 /Users/tomirszulc/Development/C#/HospitalApi/HospitalApi/HospitalApi/bin/Debug/net5.0/Newtonsoft.Json.Bson.dll
+/Users/tomirszulc/Development/C#/HospitalApi/HospitalApi/HospitalApi/bin/Debug/net5.0/HospitalApiModels.dll
+/Users/tomirszulc/Development/C#/HospitalApi/HospitalApi/HospitalApi/bin/Debug/net5.0/HospitalApiModels.pdb

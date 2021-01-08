@@ -3,12 +3,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using HospitalApi.Models;
 using HospitalApiModels;
+using System.Collections.Generic;
 
 [ApiController]
 public class DutyController : ControllerBase
 {
-    private readonly DutyService dutyService = DutyService.Instance();
-    private readonly UserRepositoryImpl userRepository = UserRepositoryImpl.Instance();
+    private readonly DutyService dutyService = new DutyService();
+    private readonly UserRepositoryImpl userRepository = new UserRepositoryImpl();
 
     [HttpGet]
     [Route("/duty/{id}")]
@@ -99,5 +100,21 @@ public class DutyController : ControllerBase
                 e.Message
             });
         }
+    }
+
+    [HttpGet]
+    [Route("/duty/month/{year}/{month}")]
+    [Authorize(Policy = Policies.ADMIN)]
+    public IEnumerable<CalendarDto> GetDutiesFromCurrentMonth(int month, int year)
+    {
+        return dutyService.GetDutiesFromCurrentMonth(month, year);      
+    }
+
+    [HttpGet]
+    [Route("/duty/day/{date}")]
+    [Authorize(Policy = Policies.ADMIN)]
+    public IEnumerable<CalendarDto> GetDutiesFromCurrentDay(string date)
+    {
+        return dutyService.GetDutiesFromCurrentDay(date);
     }
 }

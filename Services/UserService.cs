@@ -7,18 +7,9 @@ using System.Linq;
 public class UserService
 {
 
-    private static UserService instance;
-    private readonly UserRepositoryImpl userRepository = UserRepositoryImpl.Instance();
+    private readonly UserRepositoryImpl userRepository = new UserRepositoryImpl();
 
-    protected UserService() {
-    }
-
-    public static UserService Instance() {
-        if (instance == null) {
-            instance = new UserService();
-        }
-
-        return instance;
+    public UserService() {
     }
 
     public User CreateUser(string username, string password, string firstName, string lastName, string pesel)
