@@ -34,7 +34,7 @@ public class DutyController : ControllerBase
         IActionResult response;
         try
         {
-            User user = userRepository.FindByUsername(dto.Username);
+            Nurse user = userRepository.FindByNurseByUsername(dto.Username);
 
             Duty duty = null;
             if (dto.Specialization != null)

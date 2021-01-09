@@ -12,7 +12,11 @@ public class UserRepositoryImpl : IUserRepository
 
     public UserRepositoryImpl()
     {
-        this.userContext = new UserContext("User ID = hospitalapi;Password=hospitalapi;Host=localhost;Port=5432;Database=hospitalapi;Integrated Security=true; Pooling=true;");
+        //this.userContext = new UserContext("User ID = hospitalapi;Password=hospitalapi;Host=localhost;Port=5432;Database=hospitalapi;Integrated Security=true; Pooling=true;");
+
+        //For docker use this
+        this.userContext = new UserContext("Username=hospitalapi;Password=hospitalapi;Host=hospitalapi;Database=hospitalapi;");
+
     }
 
     public User CreateUser(User user)
@@ -39,6 +43,11 @@ public class UserRepositoryImpl : IUserRepository
 
     public User FindByUsername(string username) {
         return userContext.Users.Where(u => u.Username.Equals(username)).FirstOrDefault();
+    }  
+
+    public Nurse FindByNurseByUsername(string username)
+    {
+        return userContext.Nurse.Where(u => u.Username.Equals(username)).Include(d => d.duty).FirstOrDefault();
     }
 
     public Nurse CreateNurse(Nurse nurse) {

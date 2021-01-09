@@ -1,0 +1,43 @@
+version: '3'
+services:
+  backend:
+    container_name: 'hospital-api-container-1'
+    image: 'hospital-api'
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '8081:80'
+    depends_on:
+      - 'hospitalapi'
+    networks:
+      - my-network
+
+  front:
+    container_name: 'hospital-front-http-1'
+    image: 'hospital-front-http'
+    ports:
+      - '8080:80'
+    depends_on:
+      - 'backend'
+
+  hospitalapi:
+    ports:
+      - '5432:80'
+    container_name: hospitalapi-1
+    environment:
+      - POSTGRES_USER=hospitalapi
+      - POSTGRES_PASSWORD=hospitalapi
+      - POSTGRES_DB=hospitalapi
+    volumes:
+      - 'hospitalapi-1:/var/lib/postgresql/data'
+    image: 'ecf17f524881'
+    networks:
+      - my-network
+
+volumes:
+  hospitalapi-1:
+
+networks:
+  my-network:
+    driver: bridge
