@@ -45,11 +45,6 @@ public class UserRepositoryImpl : IUserRepository
         return userContext.Users.Where(u => u.Username.Equals(username)).FirstOrDefault();
     }  
 
-    public Nurse FindByNurseByUsername(string username)
-    {
-        return userContext.Nurse.Where(u => u.Username.Equals(username)).Include(d => d.duty).FirstOrDefault();
-    }
-
     public Nurse CreateNurse(Nurse nurse) {
         var result = userContext.Add(nurse);
         userContext.SaveChanges();
@@ -94,7 +89,7 @@ public class UserRepositoryImpl : IUserRepository
     }
 
     public Nurse FindNurseByUsername(string username) {
-        return userContext.Nurse.Where(u => u.Username.Equals(username)).FirstOrDefault();
+        return userContext.Nurse.Where(u => u.Username.Equals(username)).Include(d => d.duty).FirstOrDefault();
     }
 
     public List<CalendarDto> GetDutiesFromCurrentMonth(int month, int year) {
