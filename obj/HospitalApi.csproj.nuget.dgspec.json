@@ -14,7 +14,7 @@
         "outputPath": "/Users/tomirszulc/Development/C#/HospitalApi/HospitalApi/HospitalApi/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/tomirszulc/.nuget/NuGet/NuGet.Config"
+          "/Users/tomirszulc/.config/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net5.0"

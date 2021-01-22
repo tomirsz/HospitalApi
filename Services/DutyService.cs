@@ -153,6 +153,7 @@ public class DutyService
 
     }
 
+    //Better to fetch only duties instead doctors
     private bool CheckSpecialization(Duty duty)
     {
         List<Doctor> result = userService.GetAllDoctors().Where(
